@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
+import 'logger_service.dart';
 
 class ApiService {
   static String get _baseUrl {
@@ -11,15 +12,27 @@ class ApiService {
     return 'http://localhost:8000/api/';
   }
 
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: _baseUrl,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ),
-  );
+  late final Dio _dio;
+
+  ApiService() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    _dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        logPrint: (obj) => logger.d(obj),
+      ),
+    );
+  }
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
@@ -36,10 +49,11 @@ class ApiService {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
+        logger.i('Login Successful: ${userJson['email']}');
         return {'token': token, 'user': UserModel.fromJson(userJson)};
       }
     } on DioException catch (e) {
-      print('Login Error: ${e.response?.data ?? e.message}');
+      logger.e('Login Error', error: e.response?.data ?? e.message);
       rethrow;
     }
     return null;

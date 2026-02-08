@@ -1,8 +1,7 @@
-import 'dart:math' as logger;
-
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../models/user_model.dart';
+import '../../services/logger_service.dart';
 
 class ProfileViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -17,6 +16,7 @@ class ProfileViewModel extends ChangeNotifier {
       userData = await _authService.getProfile();
     } catch (e) {
       errorMessage = e.toString();
+      logger.e('Profile Init Error: $e');
     } finally {
       _setLoading(false);
     }
@@ -31,7 +31,21 @@ class ProfileViewModel extends ChangeNotifier {
       }
     } catch (e) {
       errorMessage = e.toString();
-      logger.e;
+      logger.e('Update Profile Error: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> deleteAccount() async {
+    _setLoading(true);
+    try {
+      final success = await _authService.deleteAccount();
+      return success;
+    } catch (e) {
+      errorMessage = 'Hesap silinirken bir hata oluştu.';
+      logger.e('Delete Account ViewModel Error: $e');
+      return false;
     } finally {
       _setLoading(false);
     }

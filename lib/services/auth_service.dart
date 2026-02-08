@@ -114,4 +114,18 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+
+  Future<bool> deleteAccount() async {
+    try {
+      final response = await _apiClient.dio.delete(ApiConstants.deleteAccount);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        await logout();
+        return true;
+      }
+      return false;
+    } on DioException catch (e) {
+      logger.e('Delete Account Error: ${e.response?.data ?? e.message}');
+      rethrow;
+    }
+  }
 }

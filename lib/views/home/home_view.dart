@@ -4,6 +4,8 @@ import '../auth/login_view.dart';
 import '../profile/profile_view.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
+import '../../core/utils/image_util.dart';
+import '../my_products/my_products_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -75,9 +77,9 @@ class _HomeViewState extends State<HomeView> {
                   CircleAvatar(
                     radius: SizeConfig.getProportionateScreenWidth(50),
                     backgroundColor: Colors.blue.shade100,
-                    backgroundImage: user.profilePhoto != null
-                        ? NetworkImage(user.profilePhoto!)
-                        : null,
+                    backgroundImage: ImageUtil.getImageProvider(
+                      user.profilePhoto,
+                    ),
                     child: user.profilePhoto == null
                         ? Text(
                             user.name[0].toUpperCase(),
@@ -118,7 +120,24 @@ class _HomeViewState extends State<HomeView> {
                       subtitle: Text(user.createdAt ?? '-'),
                     ),
                   ),
-                  SizedBox(height: SizeTokens.k24),
+                  SizedBox(height: SizeTokens.k12),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.list_alt, color: Colors.blue),
+                      title: const Text('İlanlarım'),
+                      subtitle: const Text('Kendi ilanlarınızı yönetin'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyProductsView(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: SizeTokens.k12),
                   ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(

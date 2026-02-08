@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/login_view.dart';
 import '../../core/responsive/size_config.dart';
 import '../../core/responsive/size_tokens.dart';
 import '../../viewmodels/profile_view_model.dart';
@@ -173,9 +174,52 @@ class _ProfileViewState extends State<ProfileView> {
                       child: const Text('Kaydet'),
                     ),
                   ),
+                  SizedBox(height: SizeTokens.k16),
+                  TextButton(
+                    onPressed: _showDeleteAccountDialog,
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: const Text('Hesabımı Sil'),
+                  ),
                 ],
               ),
             ),
     );
+  }
+
+  Future<void> _showDeleteAccountDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hesabı Sil'),
+        content: const Text(
+          'Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Vazgeç'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Sil'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      final success = await _viewModel.deleteAccount();
+      if (success && mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginView()),
+          (route) => false,
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_viewModel.errorMessage ?? 'Bir hata oluştu')),
+        );
+      }
+    }
   }
 }

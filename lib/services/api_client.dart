@@ -45,12 +45,14 @@ class ApiClient {
     );
   }
 
-  static String get _baseUrl {
+  static String get baseUrl {
     if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000/api/';
+      return 'http://10.0.2.2:8000';
     }
-    return 'http://192.168.1.7:8000/api/';
+    return 'http://192.168.1.7:8000';
   }
+
+  static String get _baseUrl => '$baseUrl/api/';
 
   Future<void> _addToken(RequestOptions options) async {
     final prefs = await SharedPreferences.getInstance();

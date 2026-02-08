@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/utils/image_util.dart';
 
 class ProfilePhotoSection extends StatelessWidget {
   final String? imageUrl;
@@ -11,18 +12,6 @@ class ProfilePhotoSection extends StatelessWidget {
     this.imageUrl,
     required this.onPhotoChanged,
   });
-
-  ImageProvider? _getImageProvider(String? url) {
-    if (url == null || url.isEmpty) return null;
-    if (url.startsWith('http')) {
-      return NetworkImage(url);
-    } else if (url.startsWith('data:image')) {
-      // Extract base64 part
-      final base64String = url.split(',').last;
-      return MemoryImage(base64Decode(base64String));
-    }
-    return null;
-  }
 
   Future<void> _pickImage(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
@@ -78,7 +67,7 @@ class ProfilePhotoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageProvider = _getImageProvider(imageUrl);
+    final imageProvider = ImageUtil.getImageProvider(imageUrl);
 
     return Center(
       child: GestureDetector(

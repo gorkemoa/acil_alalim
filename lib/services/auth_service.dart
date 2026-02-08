@@ -67,6 +67,21 @@ class AuthService {
     return null;
   }
 
+  Future<UserModel?> getProfile() async {
+    try {
+      final response = await _apiClient.dio.get('auth/profile');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        return UserModel.fromJson(data);
+      }
+    } on DioException catch (e) {
+      logger.e('Get Profile Error', error: e.response?.data ?? e.message);
+      rethrow;
+    }
+    return null;
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');

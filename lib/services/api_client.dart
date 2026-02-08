@@ -26,10 +26,10 @@ class ApiClient {
 
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
+        onRequest: (options, handler) async {
           logger.t('🚀 [${options.method}] ${options.uri}');
-          // Token ekleme işlemi burada yapılabilir
-          _addToken(options, handler);
+          await _addToken(options);
+          handler.next(options);
         },
         onResponse: (response, handler) {
           logger.d(
@@ -51,18 +51,14 @@ class ApiClient {
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:8000/api/';
     }
-    return 'http://localhost:8000/api/';
+    return 'http://192.168.1.7:8000/api/';
   }
 
-  Future<void> _addToken(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+  Future<void> _addToken(RequestOptions options) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+      options.headers['Authorization'] = 'Bearer $token'; // JWT Standard format
     }
-    handler.next(options);
   }
 }

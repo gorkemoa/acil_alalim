@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
-import '../services/product_service.dart';
-import '../models/user_model.dart';
-import '../models/product_model.dart';
-import '../models/meta_model.dart';
+import 'package:acil_alalim/services/auth_service.dart';
+import 'package:acil_alalim/services/product_service.dart';
+import 'package:acil_alalim/models/user_model.dart';
+import 'package:acil_alalim/models/product_model.dart';
+import 'package:acil_alalim/models/meta_model.dart';
+import 'package:acil_alalim/models/product_response_model.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -34,7 +35,7 @@ class HomeViewModel extends ChangeNotifier {
       ]);
 
       user = results[0] as UserModel?;
-      final productResponse = results[1] as dynamic; // ProductResponseModel
+      final productResponse = results[1] as ProductResponseModel;
       products = productResponse.data;
       meta = productResponse.meta;
       page = 1;

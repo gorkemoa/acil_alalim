@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../models/product_model.dart';
-import '../../../core/responsive/size_config.dart';
-import '../../../core/responsive/size_tokens.dart';
-import '../../../core/utils/image_util.dart';
+import 'package:acil_alalim/models/product_model.dart';
+import 'package:acil_alalim/core/responsive/size_config.dart';
+import 'package:acil_alalim/core/responsive/size_tokens.dart';
+import 'package:acil_alalim/core/utils/image_util.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -17,7 +17,7 @@ class ProductCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(SizeTokens.radiusM),
+        borderRadius: BorderRadius.circular(SizeTokens.r12),
       ),
       child: InkWell(
         onTap: onTap,
@@ -72,9 +72,7 @@ class ProductCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: Colors.amber.shade100,
-                            borderRadius: BorderRadius.circular(
-                              SizeTokens.radiusS,
-                            ),
+                            borderRadius: BorderRadius.circular(SizeTokens.r8),
                           ),
                           child: Text(
                             'Sponsorlu',
@@ -112,7 +110,7 @@ class ProductCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        size: SizeTokens.iconS,
+                        size: SizeTokens.iconSmall,
                         color: Colors.blue,
                       ),
                       SizedBox(width: SizeTokens.k4),
@@ -149,7 +147,7 @@ class ProductCard extends StatelessWidget {
       color: Colors.grey[200],
       child: Icon(
         Icons.image_outlined,
-        size: SizeTokens.iconXXL,
+        size: SizeTokens.iconLarge,
         color: Colors.grey[400],
       ),
     );

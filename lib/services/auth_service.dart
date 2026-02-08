@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/user_model.dart';
-import '../app/api_constants.dart';
-import 'api_client.dart';
-import 'logger_service.dart';
+import 'package:acil_alalim/models/user_model.dart';
+import 'package:acil_alalim/app/api_constants.dart';
+import 'package:acil_alalim/services/api_client.dart';
+import 'package:acil_alalim/services/logger_service.dart';
 
 class AuthService {
   final ApiClient _apiClient = ApiClient();
@@ -92,10 +92,6 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        // Typically the API returns the updated user inside a 'data' or directly
-        // If it's like login/register, it might be in 'user' field.
-        // But the user request just shows the body sent.
-        // Assuming it returns the updated user object directly if successful.
         return UserModel.fromJson(data);
       }
     } on DioException catch (e) {

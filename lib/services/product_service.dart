@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import '../models/product_model.dart';
-import '../models/product_response_model.dart';
-import '../app/api_constants.dart';
-import 'api_client.dart';
-import 'logger_service.dart';
+import 'package:acil_alalim/models/product_model.dart';
+import 'package:acil_alalim/models/product_response_model.dart';
+import 'package:acil_alalim/app/api_constants.dart';
+import 'package:acil_alalim/services/api_client.dart';
+import 'package:acil_alalim/services/logger_service.dart';
 
 class ProductService {
   final ApiClient _apiClient = ApiClient();
@@ -40,6 +40,21 @@ class ProductService {
     }
   }
 
+  Future<ProductModel> getProductDetail(int id) async {
+    try {
+      final response = await _apiClient.dio.get('${ApiConstants.products}/$id');
+
+      if (response.statusCode == 200) {
+        return ProductModel.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load product detail');
+      }
+    } on DioException catch (e) {
+      logger.e('Get Product Detail Error: ${e.message}');
+      rethrow;
+    }
+  }
+
   Future<List<ProductModel>> getMyProducts() async {
     try {
       final response = await _apiClient.dio.get(ApiConstants.myProducts);
@@ -51,6 +66,24 @@ class ProductService {
       return [];
     } on DioException catch (e) {
       logger.e('Get My Products Error: ${e.message}');
+      rethrow;
+    }
+  }
+
+  Future<ProductModel> addProduct(Map<String, dynamic> productData) async {
+    try {
+      final response = await _apiClient.dio.post(
+        ApiConstants.products,
+        data: productData,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ProductModel.fromJson(response.data);
+      } else {
+        throw Exception('Failed to add product');
+      }
+    } on DioException catch (e) {
+      logger.e('Add Product Error: ${e.response?.data ?? e.message}');
       rethrow;
     }
   }

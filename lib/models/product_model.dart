@@ -1,3 +1,5 @@
+import 'package:acil_alalim/models/product_image_model.dart';
+
 class ProductModel {
   final int id;
   final int userId;
@@ -15,12 +17,16 @@ class ProductModel {
   final String? userName;
   final String? userAvatar;
   final int? karmaScore;
+  final int? userKarma; // From detail API
   final String? provinceName;
   final String? districtName;
   final String? categoryName;
   final String? userAvatarUrl;
   final String? mainImageFile;
   final String? mainImageUrl;
+  final String? userProvinceName; // From detail API
+  final String? userDistrictName; // From detail API
+  final List<ProductImageModel>? images; // From detail API
 
   ProductModel({
     required this.id,
@@ -39,12 +45,16 @@ class ProductModel {
     this.userName,
     this.userAvatar,
     this.karmaScore,
+    this.userKarma,
     this.provinceName,
     this.districtName,
     this.categoryName,
     this.userAvatarUrl,
     this.mainImageFile,
     this.mainImageUrl,
+    this.userProvinceName,
+    this.userDistrictName,
+    this.images,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -81,12 +91,22 @@ class ProductModel {
           : (json['karma_score'] != null
                 ? int.tryParse(json['karma_score'].toString())
                 : null),
+      userKarma: json['user_karma'] is int
+          ? json['user_karma']
+          : (json['user_karma'] != null
+                ? int.tryParse(json['user_karma'].toString())
+                : null),
       provinceName: json['province_name'],
       districtName: json['district_name'],
       categoryName: json['category_name'],
       userAvatarUrl: json['user_avatar_url'],
       mainImageFile: json['main_image_file'],
       mainImageUrl: json['main_image_url'],
+      userProvinceName: json['user_province_name'],
+      userDistrictName: json['user_district_name'],
+      images: (json['images'] as List<dynamic>?)
+          ?.map((e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -108,12 +128,16 @@ class ProductModel {
       'user_name': userName,
       'user_avatar': userAvatar,
       'karma_score': karmaScore,
+      'user_karma': userKarma,
       'province_name': provinceName,
       'district_name': districtName,
       'category_name': categoryName,
       'user_avatar_url': userAvatarUrl,
       'main_image_file': mainImageFile,
       'main_image_url': mainImageUrl,
+      'user_province_name': userProvinceName,
+      'user_district_name': userDistrictName,
+      'images': images?.map((e) => e.toJson()).toList(),
     };
   }
 }

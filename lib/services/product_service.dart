@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:acil_alalim/models/product_model.dart';
 import 'package:acil_alalim/models/product_response_model.dart';
@@ -30,7 +31,21 @@ class ProductService {
       );
 
       if (response.statusCode == 200) {
-        return ProductResponseModel.fromJson(response.data);
+        dynamic data = response.data;
+        if (data is String) {
+          try {
+            data = json.decode(data);
+          } catch (e) {
+            logger.e('Failed to decode response data: $e');
+            throw Exception('Server returned invalid JSON: $data');
+          }
+        }
+
+        if (data is! Map<String, dynamic>) {
+          throw Exception('Expected Map but got ${data.runtimeType}');
+        }
+
+        return ProductResponseModel.fromJson(data);
       } else {
         throw Exception('Failed to load products');
       }
@@ -45,7 +60,25 @@ class ProductService {
       final response = await _apiClient.dio.get('${ApiConstants.products}/$id');
 
       if (response.statusCode == 200) {
-        return ProductModel.fromJson(response.data);
+        dynamic data = response.data;
+        if (data is String) {
+          try {
+            data = json.decode(data);
+          } catch (e) {
+            logger.e('Failed to decode response data: $e');
+            throw Exception('Server returned invalid JSON: $data');
+          }
+        }
+
+        if (data is Map<String, dynamic> && data.containsKey('data')) {
+          data = data['data'];
+        }
+
+        if (data is! Map<String, dynamic>) {
+          throw Exception('Expected Map but got ${data.runtimeType}');
+        }
+
+        return ProductModel.fromJson(data);
       } else {
         throw Exception('Failed to load product detail');
       }
@@ -60,8 +93,27 @@ class ProductService {
       final response = await _apiClient.dio.get(ApiConstants.myProducts);
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        return data.map((json) => ProductModel.fromJson(json)).toList();
+        dynamic data = response.data;
+        if (data is String) {
+          try {
+            data = json.decode(data);
+          } catch (e) {
+            logger.e('Failed to decode response data: $e');
+            throw Exception('Server returned invalid JSON: $data');
+          }
+        }
+
+        if (data is Map<String, dynamic> && data.containsKey('data')) {
+          data = data['data'];
+        }
+
+        if (data is! List) {
+          throw Exception('Expected List but got ${data.runtimeType}');
+        }
+
+        return data
+            .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
+            .toList();
       }
       return [];
     } on DioException catch (e) {
@@ -78,7 +130,25 @@ class ProductService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return ProductModel.fromJson(response.data);
+        dynamic data = response.data;
+        if (data is String) {
+          try {
+            data = json.decode(data);
+          } catch (e) {
+            logger.e('Failed to decode response data: $e');
+            throw Exception('Server returned invalid JSON: $data');
+          }
+        }
+
+        if (data is Map<String, dynamic> && data.containsKey('data')) {
+          data = data['data'];
+        }
+
+        if (data is! Map<String, dynamic>) {
+          throw Exception('Expected Map but got ${data.runtimeType}');
+        }
+
+        return ProductModel.fromJson(data);
       } else {
         throw Exception('Failed to add product');
       }

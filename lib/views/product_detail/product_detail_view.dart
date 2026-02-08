@@ -3,6 +3,8 @@ import 'package:acil_alalim/viewmodels/product_detail_view_model.dart';
 import 'package:acil_alalim/core/responsive/size_config.dart';
 import 'package:acil_alalim/core/responsive/size_tokens.dart';
 import 'package:acil_alalim/core/utils/image_util.dart';
+import 'package:acil_alalim/models/product_model.dart';
+import 'package:acil_alalim/models/comment_model.dart';
 
 class ProductDetailView extends StatefulWidget {
   final int productId;
@@ -181,6 +183,8 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                           SizedBox(height: SizeTokens.k32),
                           _buildUserCard(product),
                           SizedBox(height: SizeTokens.k32),
+                          _buildCommentsSection(product),
+                          SizedBox(height: SizeTokens.k32),
                         ],
                       ),
                     ),
@@ -280,6 +284,112 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCommentsSection(ProductModel product) {
+    final comments = product.comments ?? [];
+    final commentsCount = product.commentsCount ?? comments.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Yorumlar',
+              style: TextStyle(
+                fontSize: SizeTokens.fontL,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: SizeTokens.k8),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: SizeTokens.k8,
+                vertical: SizeTokens.k4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(SizeTokens.r12),
+              ),
+              child: Text(
+                commentsCount.toString(),
+                style: TextStyle(
+                  fontSize: SizeTokens.fontS,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: SizeTokens.k16),
+        if (comments.isEmpty)
+          const Text('Henüz yorum yapılmamış. İlk yorumu sen yap!')
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: comments.length,
+            separatorBuilder: (context, index) =>
+                SizedBox(height: SizeTokens.k16),
+            itemBuilder: (context, index) {
+              final comment = comments[index];
+              return _buildCommentItem(comment);
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCommentItem(CommentModel comment) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: SizeConfig.getProportionateScreenWidth(18),
+          backgroundImage: ImageUtil.getImageProvider(comment.profilePhotoUrl),
+          child: comment.profilePhotoUrl == null
+              ? Text(comment.userName[0].toUpperCase())
+              : null,
+        ),
+        SizedBox(width: SizeTokens.k12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    comment.userName,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontM,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    comment.createdAt,
+                    style: TextStyle(
+                      fontSize: SizeTokens.fontXS,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: SizeTokens.k4),
+              Text(
+                comment.comment,
+                style: TextStyle(
+                  fontSize: SizeTokens.fontM,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

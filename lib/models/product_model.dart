@@ -1,4 +1,5 @@
 import 'package:acil_alalim/models/product_image_model.dart';
+import 'package:acil_alalim/models/comment_model.dart';
 
 class ProductModel {
   final int id;
@@ -27,6 +28,10 @@ class ProductModel {
   final String? userProvinceName; // From detail API
   final String? userDistrictName; // From detail API
   final List<ProductImageModel>? images; // From detail API
+  final List<CommentModel>? comments; // From detail API
+  final List<CommentModel>? commentsTree; // From detail API
+  final int? commentsCount; // From detail API
+  final bool? allowComments; // From detail API
 
   ProductModel({
     required this.id,
@@ -55,15 +60,29 @@ class ProductModel {
     this.userProvinceName,
     this.userDistrictName,
     this.images,
+    this.comments,
+    this.commentsTree,
+    this.commentsCount,
+    this.allowComments,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(
-      id: json['id'],
-      userId: json['user_id'],
+      id: json['id'] is int
+          ? json['id']
+          : (json['id'] != null ? int.tryParse(json['id'].toString()) ?? 0 : 0),
+      userId: json['user_id'] is int
+          ? json['user_id']
+          : (json['user_id'] != null
+                ? int.tryParse(json['user_id'].toString()) ?? 0
+                : 0),
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      categoryId: json['category_id'],
+      categoryId: json['category_id'] is int
+          ? json['category_id']
+          : (json['category_id'] != null
+                ? int.tryParse(json['category_id'].toString()) ?? 0
+                : 0),
       latitude: json['latitude']?.toString(),
       longitude: json['longitude']?.toString(),
       provinceId: json['province_id'] is int
@@ -104,9 +123,38 @@ class ProductModel {
       mainImageUrl: json['main_image_url'],
       userProvinceName: json['user_province_name'],
       userDistrictName: json['user_district_name'],
-      images: (json['images'] as List<dynamic>?)
-          ?.map((e) => ProductImageModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      images: json['images'] != null && json['images'] is List
+          ? (json['images'] as List)
+                .map(
+                  (e) => e is Map<String, dynamic>
+                      ? ProductImageModel.fromJson(e)
+                      : ProductImageModel(
+                          id: 0,
+                          needId: json['id'] is int ? json['id'] : 0,
+                          url: e.toString(),
+                        ),
+                )
+                .toList()
+          : null,
+      comments: json['comments'] != null && json['comments'] is List
+          ? (json['comments'] as List)
+                .map((e) => CommentModel.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
+      commentsTree:
+          json['comments_tree'] != null && json['comments_tree'] is List
+          ? (json['comments_tree'] as List)
+                .map((e) => CommentModel.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
+      commentsCount: json['comments_count'] is int
+          ? json['comments_count']
+          : (json['comments_count'] != null
+                ? int.tryParse(json['comments_count'].toString())
+                : null),
+      allowComments: json['allow_comments'] is bool
+          ? json['allow_comments']
+          : (json['allow_comments'] == 1 || json['allow_comments'] == '1'),
     );
   }
 
@@ -138,6 +186,10 @@ class ProductModel {
       'user_province_name': userProvinceName,
       'user_district_name': userDistrictName,
       'images': images?.map((e) => e.toJson()).toList(),
+      'comments': comments?.map((e) => e.toJson()).toList(),
+      'comments_tree': commentsTree?.map((e) => e.toJson()).toList(),
+      'comments_count': commentsCount,
+      'allow_comments': allowComments,
     };
   }
 }

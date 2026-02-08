@@ -8,6 +8,7 @@ import 'package:acil_alalim/core/utils/image_util.dart';
 import 'package:acil_alalim/views/my_products/my_products_view.dart';
 import 'package:acil_alalim/views/home/widgets/product_card.dart';
 import 'package:acil_alalim/views/product_detail/product_detail_view.dart';
+import 'package:acil_alalim/views/add_product/add_product_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -122,8 +123,14 @@ class _HomeViewState extends State<HomeView> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Add new ilan
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddProductView()),
+          );
+          if (result == true) {
+            _viewModel.refresh();
+          }
         },
         child: const Icon(Icons.add),
       ),

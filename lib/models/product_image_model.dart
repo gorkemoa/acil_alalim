@@ -19,8 +19,14 @@ class ProductImageModel {
 
   factory ProductImageModel.fromJson(Map<String, dynamic> json) {
     return ProductImageModel(
-      id: json['id'],
-      needId: json['need_id'],
+      id: json['id'] is int
+          ? json['id']
+          : (json['id'] != null ? int.tryParse(json['id'].toString()) ?? 0 : 0),
+      needId: json['need_id'] is int
+          ? json['need_id']
+          : (json['need_id'] != null
+                ? int.tryParse(json['need_id'].toString()) ?? 0
+                : 0),
       imagePath: json['image_path'],
       isMain: json['is_main'],
       createdAt: json['created_at'],

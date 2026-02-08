@@ -37,6 +37,7 @@ dependencies:
   dio: ^5.9.1
   shared_preferences: ^2.5.3
   logger: ^2.6.2
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

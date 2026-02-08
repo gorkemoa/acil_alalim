@@ -1,57 +1,59 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
-import 'register_screen.dart';
-import 'home_screen.dart';
+import '../../viewmodels/login_view_model.dart';
+import '../../core/responsive/size_config.dart';
+import '../home/home_view.dart';
+import 'register_view.dart'; // We should rename RegisterScreen to RegisterView
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController(text: 'gorkem@example.com');
   final _passwordController = TextEditingController(text: 'Gorkem123.');
-  final _authService = AuthService();
-  bool _isLoading = false;
-  String? _errorMessage;
 
-  Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  late LoginViewModel _viewModel;
 
-    try {
-      final result = await _authService.login(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = LoginViewModel();
+    _viewModel.addListener(_onViewModelUpdate);
+  }
+
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelUpdate);
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onViewModelUpdate() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _handleLogin() async {
+    final success = await _viewModel.login(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (success && mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeView()),
       );
-
-      if (result != null && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Giriş başarılı!')));
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.';
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+
+    // Using Scaffold/Container style as before but refactored
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -118,10 +120,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    if (_errorMessage != null) ...[
+                    if (_viewModel.errorMessage != null) ...[
                       const SizedBox(height: 16),
                       Text(
-                        _errorMessage!,
+                        _viewModel.errorMessage!,
                         style: const TextStyle(color: Colors.red, fontSize: 13),
                       ),
                     ],
@@ -130,25 +132,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: _isLoading
+                        onPressed: _viewModel.isLoading ? null : _handleLogin,
+                        child: _viewModel.isLoading
                             ? const CircularProgressIndicator(
                                 color: Colors.white,
                               )
-                            : const Text(
-                                'Giriş Yap',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                            : const Text('Giriş Yap'),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -156,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
+                            builder: (context) => const RegisterView(),
                           ),
                         );
                       },

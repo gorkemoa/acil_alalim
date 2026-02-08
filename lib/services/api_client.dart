@@ -22,8 +22,6 @@ class ApiClient {
       ),
     );
 
-    logger.i('🔌 ApiClient initialized with Base URL: $_baseUrl');
-
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -58,7 +56,8 @@ class ApiClient {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token'; // JWT Standard format
+      final cleanToken = token.trim();
+      options.headers['Authorization'] = 'Bearer $cleanToken';
     }
   }
 }

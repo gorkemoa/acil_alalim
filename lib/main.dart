@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'views/auth/login_view.dart';
+import 'app/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,11 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Acil Alalım',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
+      theme: AppTheme.theme,
+      home: const LoginView(),
     );
   }
 }

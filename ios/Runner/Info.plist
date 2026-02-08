@@ -50,5 +50,11 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Profil fotoğrafı seçmek için galerinize erişmemiz gerekiyor.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Profil fotoğrafı çekmek için kameranıza erişmemiz gerekiyor.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Video çekimi için mikrofonunuza erişmemiz gerekiyor.</string>
 </dict>
 </plist>

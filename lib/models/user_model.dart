@@ -11,6 +11,10 @@ class UserModel {
   final int? karmaScore;
   final double? latitude;
   final double? longitude;
+  final String? phone;
+  final String? whatsapp;
+  final String? bio;
+  final String? website;
 
   UserModel({
     required this.id,
@@ -25,6 +29,10 @@ class UserModel {
     this.karmaScore,
     this.latitude,
     this.longitude,
+    this.phone,
+    this.whatsapp,
+    this.bio,
+    this.website,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +57,10 @@ class UserModel {
       longitude: json['longitude'] != null
           ? double.tryParse(json['longitude'].toString())
           : null,
+      phone: json['phone'],
+      whatsapp: json['whatsapp'],
+      bio: json['bio'],
+      website: json['website'],
     );
   }
 
@@ -66,6 +78,10 @@ class UserModel {
       'karma_score': karmaScore,
       'latitude': latitude,
       'longitude': longitude,
+      'phone': phone,
+      'whatsapp': whatsapp,
+      'bio': bio,
+      'website': website,
     };
   }
 }

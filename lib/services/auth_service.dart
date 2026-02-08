@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
+import '../app/api_constants.dart';
 import 'api_client.dart';
 import 'logger_service.dart';
 
@@ -10,7 +11,7 @@ class AuthService {
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       final response = await _apiClient.dio.post(
-        'auth/login',
+        ApiConstants.login,
         data: {'email': email, 'password': password},
       );
 
@@ -22,11 +23,11 @@ class AuthService {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-        logger.i('Login Successful: ${userJson['email']}');
+        logger.i('Login: ${userJson['email']}');
         return {'token': token, 'user': UserModel.fromJson(userJson)};
       }
     } on DioException catch (e) {
-      logger.e('Login Error', error: e.response?.data ?? e.message);
+      logger.e('Login Data Error: ${e.response?.data ?? e.message}');
       rethrow;
     }
     return null;
@@ -40,7 +41,7 @@ class AuthService {
   ) async {
     try {
       final response = await _apiClient.dio.post(
-        'auth/register',
+        ApiConstants.register,
         data: {
           'name': name,
           'surname': surname,
@@ -57,11 +58,11 @@ class AuthService {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
-        logger.i('Register Successful: ${userJson['email']}');
+        logger.i('Registered: ${userJson['email']}');
         return {'token': token, 'user': UserModel.fromJson(userJson)};
       }
     } on DioException catch (e) {
-      logger.e('Register Error', error: e.response?.data ?? e.message);
+      logger.e('Register Data Error: ${e.response?.data ?? e.message}');
       rethrow;
     }
     return null;
@@ -69,14 +70,36 @@ class AuthService {
 
   Future<UserModel?> getProfile() async {
     try {
-      final response = await _apiClient.dio.get('auth/profile');
+      final response = await _apiClient.dio.get(ApiConstants.profile);
 
       if (response.statusCode == 200) {
         final data = response.data;
         return UserModel.fromJson(data);
       }
     } on DioException catch (e) {
-      logger.e('Get Profile Error', error: e.response?.data ?? e.message);
+      logger.e('Profile Error: ${e.message}');
+      rethrow;
+    }
+    return null;
+  }
+
+  Future<UserModel?> updateProfile(Map<String, dynamic> profileData) async {
+    try {
+      final response = await _apiClient.dio.post(
+        ApiConstants.profile,
+        data: profileData,
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        // Typically the API returns the updated user inside a 'data' or directly
+        // If it's like login/register, it might be in 'user' field.
+        // But the user request just shows the body sent.
+        // Assuming it returns the updated user object directly if successful.
+        return UserModel.fromJson(data);
+      }
+    } on DioException catch (e) {
+      logger.e('Update Profile Error: ${e.response?.data ?? e.message}');
       rethrow;
     }
     return null;

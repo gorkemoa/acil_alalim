@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: 'gorkem@example.com');
-  final _passwordController = TextEditingController(text: 'Gorkem123.');
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
+  final _surnameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _authService = AuthService();
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final result = await _authService.login(
+      final result = await _authService.register(
+        _nameController.text.trim(),
+        _surnameController.text.trim(),
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
@@ -31,12 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
       if (result != null && mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Giriş başarılı!')));
-        // Navigate to home or next screen
+        ).showSnackBar(const SnackBar(content: Text('Kayıt başarılı!')));
+        // Navigate to home or simply pop
+        Navigator.of(context).pop(); // Go back to login
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.';
+        _errorMessage = 'Kayıt yapılamadı. Lütfen bilgilerinizi kontrol edin.';
       });
     } finally {
       if (mounted) {
@@ -50,6 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Kayıt Ol'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -75,24 +86,41 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
-                      Icons.flash_on,
+                      Icons.person_add,
                       size: 64,
                       color: Colors.blueAccent,
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Acil Alalım',
+                      'Aramıza Katılın',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Hesabınıza giriş yapın',
-                      style: TextStyle(color: Colors.grey),
-                    ),
                     const SizedBox(height: 32),
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Ad',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _surnameController,
+                      decoration: InputDecoration(
+                        labelText: 'Soyad',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
@@ -127,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
+                        onPressed: _isLoading ? null : _register,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           foregroundColor: Colors.white,
@@ -140,24 +168,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.white,
                               )
                             : const Text(
-                                'Giriş Yap',
+                                'Kayıt Ol',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text('Hesabınız yok mu? Kayıt Olun'),
                     ),
                   ],
                 ),
